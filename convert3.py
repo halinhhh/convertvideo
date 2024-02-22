@@ -5,18 +5,15 @@ def binary_string_to_binary(binary_string):
     binary_data = bytes(int(binary_string[i:i+8], 2) for i in range(0, len(binary_string), 8))
     return binary_data
 
-def binary_to_video(binary_data, output_video_path, width, height, codecs, duration, audio_channels):
+def binary_to_video(binary_data, output_video_path, width, height, duration, audio_channels):
     # Use ffmpeg to write binary data to a video file
     command = [
         '/opt/homebrew/bin/ffmpeg',  # Adjust this path to the location of your ffmpeg executable
-        '-f', 'rawvideo',
-        '-pixel_format', 'rgb24',
-        '-video_size', f'{width}x{height}',
-        '-i', '-',
-        '-c:v', codecs,
-        '-pix_fmt', 'yuv420p',
+        '-f', 'h264',  
+        '-i', '-',  
+        '-vf', f'scale={width}:{height}',  
         '-t', duration,  # Adjust the format to HH:MM:SS
-        '-ac', audio_channels,
+        '-ac', audio_channels,  
         output_video_path
     ]
 
@@ -24,7 +21,7 @@ def binary_to_video(binary_data, output_video_path, width, height, codecs, durat
     process.communicate(input=binary_data)
 
     if process.returncode != 0:
-        raise Exception(f"FFmpeg error: {process.stderr.decode()}")
+        raise Exception("FFmpeg error")
 
 def main():
     input_file_path = '/Users/linhha/C++/video_binary.txt'
@@ -35,14 +32,13 @@ def main():
             binary_string = file.read()
 
         binary_data = binary_string_to_binary(binary_string)
-
+        
         # Use the original video parameters
         width, height = 320, 240
-        codecs = 'libx264'
         duration = '00:00:07'
         audio_channels = '2'
 
-        binary_to_video(binary_data, output_video_path, width, height, codecs, duration, audio_channels)
+        binary_to_video(binary_data, output_video_path, width, height, duration, audio_channels)
         print(f"Video reconstructed and saved to {output_video_path}")
     except Exception as e:
         print(f"Error: {e}")

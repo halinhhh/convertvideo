@@ -5,8 +5,8 @@ def video_to_binary(input_video_path):
     command = [
         '/opt/homebrew/bin/ffmpeg',  # Adjust this path to the location of your ffmpeg executable
         '-i', input_video_path,
-        '-f', 'image2pipe',
-        '-vcodec', 'rawvideo',
+        '-f', 'h264',  # Use h264
+        '-c:v', 'copy',  # Copy video stream without changing encoding
         '-pix_fmt', 'rgb24',
         '-'
     ]
